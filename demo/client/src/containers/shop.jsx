@@ -1,28 +1,28 @@
-import React from 'react'
-import { Navbar, Alignment, Icon } from '@blueprintjs/core';
-import { ShopCard } from '../components/shop-card'
+import React from 'react';
+import { Overlay, Navbar, Alignment, Icon } from '@blueprintjs/core';
+import { ShopCard } from '../components/shop-card';
 
 const pageStyle = {
-    width: '60rem',
-    margin: '3rem auto 0px auto'
-  };
+  width: '60rem',
+  margin: '3rem auto 0px auto'
+};
 
 const iconStyle = {
-    marginRight: '1rem'
-  };
+  marginRight: '1rem'
+};
 
 export default class Shop extends React.Component {
-    render() {
-        return (
-            <div>
-                <Navbar className='bp3-dark'>
-                <Navbar.Group align={Alignment.CENTER}>
-                <Navbar.Heading>
-                <Icon
-                    style={iconStyle}
-                    iconSize={Icon.SIZE_LARGE}
-                    icon='dollar'
-                ></Icon>
+  render() {
+    return (
+      <div>
+        <Navbar className='bp3-dark'>
+          <Navbar.Group align={Alignment.CENTER}>
+            <Navbar.Heading>
+              <Icon
+                style={iconStyle}
+                iconSize={Icon.SIZE_LARGE}
+                icon='shop'
+              ></Icon>
               Onesies.com
             </Navbar.Heading>
           </Navbar.Group>
@@ -53,7 +53,7 @@ export default class Shop extends React.Component {
             name={"Shark Onesie"}
             price={239.99}/>
         </div>
-        </div>
-        )
-    }
+    </div>
+    );
+  }
 }

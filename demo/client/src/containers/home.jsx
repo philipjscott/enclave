@@ -1,5 +1,6 @@
 import React from 'react';
-import { Classes, Icon, Button, Card, Elevation } from '@blueprintjs/core';
+import { Classes, Icon, Card, Elevation } from '@blueprintjs/core';
+import { withRouter } from 'react-router-dom';
 
 const pageStyle = {
   width: '100%',
@@ -7,7 +8,7 @@ const pageStyle = {
 };
 const contentStyle = {
   width: '60rem',
-  margin: '12% auto auto auto',
+  margin: '20% auto auto auto',
   display: 'flex',
   flexDirection: 'row',
   justifyContent: 'center'
@@ -18,25 +19,46 @@ const cardStyle = {
   textAlign: 'center',
   display: 'flex',
   flexDirection: 'column',
-  justifyContent: 'space-evenly'
+  justifyContent: 'space-evenly',
+  margin: '1rem 1rem'
 };
 const iconStyle = {
   marginRight: 'auto',
   marginLeft: 'auto'
 };
+const shortcuts = [
+  {
+    route: 'facewall',
+    name: 'FaceWall',
+    icon: 'mugshot'
+  },
+  {
+    route: 'shop',
+    name: 'Shop',
+    icon: 'shop'
+  }
+];
 export function Home() {
+  const cards = shortcuts.map(shortcut => {
+    return withRouter(({ history }) => (
+      <Card
+        className={Classes.DARK}
+        style={cardStyle}
+        interactive={true}
+        onClick={() => {
+          history.push('/' + shortcut.route);
+        }}
+        elevation={Elevation.ONE}
+      >
+        <Icon style={iconStyle} iconSize='100' icon={shortcut.icon}></Icon>
+        <h1>{shortcut.name}</h1>
+      </Card>
+    ));
+  });
   return (
     <div style={pageStyle}>
       <div style={contentStyle}>
-        <Card
-          className={Classes.DARK}
-          style={cardStyle}
-          interactive={true}
-          elevation={Elevation.ONE}
-        >
-          <Icon style={iconStyle} iconSize='100' icon='mugshot'></Icon>
-          <h1>FaceWall</h1>
-        </Card>
+        {cards.map((comp, i) => React.createElement(comp, { key: i }))}
       </div>
     </div>
   );
