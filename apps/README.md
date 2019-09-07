@@ -1,3 +1,1 @@
-Making multiple apps with heroku: https://medium.com/inato/how-to-setup-heroku-with-yarn-workspaces-d8eac0db0256
-
-pics: https://enclave-pics.herokuapp.com/
+We're not doing deploys; we're only running stuff locally
