@@ -25,13 +25,14 @@ export class Facewall extends React.Component {
   constructor(props) {
     super(props)
     this.state = {
+      error: false,
       displayForm: false,
       profileList: dummyData
     }
   }
 
   render() {
-    const { profileList, displayForm } = this.state
+    const { error, profileList, displayForm } = this.state
 
     return (
       <div>
@@ -53,17 +54,22 @@ export class Facewall extends React.Component {
           ))}
           <FaceAdd onClick={() => this.setState({ displayForm: true })} />
           <Overlay isOpen={displayForm} onClose={() => this.setState({ displayForm: false })}>
-            <FaceForm onSubmit={(profile) => {
-              getProfile(profile).then(data => {
-                const newProfiles = profileList.concat([{
-                  name: data.full_name,
-                  img: data.profile_image_url
-                }])
-                this.setState({
-                  profileList: newProfiles,
-                  displayForm: false
+            <FaceForm error={error} onSubmit={(profile) => {
+              getProfile(profile)
+                .then(data => {
+                  const newProfiles = profileList.concat([{
+                    name: data.full_name,
+                    img: data.profile_image_url
+                  }])
+                  this.setState({
+                    profileList: newProfiles,
+                    displayForm: false,
+                    error: false
+                  })
                 })
-              })
+                .catch(err => {
+                  this.setState({ error: true })
+                })
             }} />
           </Overlay>
         </div>

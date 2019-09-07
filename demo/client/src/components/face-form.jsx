@@ -11,6 +11,7 @@ export function FaceForm(props) {
       <FormGroup
         label="Profile"
         labelFor="profile-id"
+        helperText={props.error ? 'Profile not found' : ''}
       >
         <InputGroup
           id="profile-id"
