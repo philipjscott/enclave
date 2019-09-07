@@ -1,6 +1,8 @@
 import React from 'react';
-import { Overlay, Navbar, Alignment, Icon } from '@blueprintjs/core';
+import { Overlay, Navbar, Alignment, Icon, Colors } from '@blueprintjs/core';
 import { ShopCard } from '../components/shop-card';
+
+
 
 const pageStyle = {
   width: '60rem',
@@ -11,11 +13,13 @@ const iconStyle = {
   marginRight: '1rem'
 };
 
+const MAIN_COLOR = Colors.FOREST4    
+
 export default class Shop extends React.Component {
   render() {
     return (
       <div>
-        <Navbar className='bp3-dark'>
+        <Navbar style={{backgroundColor: MAIN_COLOR, color: Colors.WHITE}}>
           <Navbar.Group align={Alignment.CENTER}>
             <Navbar.Heading>
               <Icon
