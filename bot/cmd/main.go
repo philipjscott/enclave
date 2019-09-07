@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"os"
 	"strings"
+	"errors"
 
 	"github.com/keybase/go-keybase-chat-bot/kbchat"
 )
@@ -51,6 +52,7 @@ func main() {
 }
 
 func listen(kbc *kbchat.API, sub kbchat.NewSubscription) {
+	fmt.Println("Bot is listening for commands.")
 	for {
 		msg, err := sub.Read()
 		if err != nil {
@@ -87,6 +89,19 @@ func handleGroupCommand(fragments []string) {
 	}
 	// put everything in /Keybase/private/<user>/.enclave/groups.
 
+}
+
+func handleDataCommand(fragments []string) (error){
+	if len(fragments) < 2 {
+		err := errors.New("Arguments < 2");
+		return err
+	}
+
+	switch firstArg:= fragments[1]; firstArg {
+	case "print": 
+		fmt.Println("Print")
+	}
+	return nil
 }
 
 type groupsSchema struct {
