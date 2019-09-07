@@ -1,19 +1,20 @@
-Module exports a constructor for an `EnclaveUser`.
+Module exports a function that gets a profile, `getProfile(...)`
 
-## EnclaveUser
+## getProfile
 
-Constructor:
+Usage:
 
-* `new EnclaveUser(user)`
+```js 
+getProfile('myuser/namespace')
+  .then(profile => {
+    console.log(profile.getJSON())
+  })
+```
 
-`user` is a keybase user
-
-Methods:
-
-* `getProfile(profilePath)`
-
-`profilePath` is a path to an enclave profile (a folder that has an `enclave.yaml`).
-Returns a promise that resolves to an `EnclaveProfile`.
+Takes in a profile path and returns a promise that
+resolves to an `EnclaveProfile`. The promise will
+reject if the keybase filesystem is down, or the
+`enclave.yaml` file is malformed.
 
 ## EnclaveProfile
 
