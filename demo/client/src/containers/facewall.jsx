@@ -55,6 +55,7 @@ export class Facewall extends React.Component {
           <Overlay isOpen={displayForm} onClose={() => this.setState({ displayForm: false })}>
             <FaceForm onSubmit={(profile) => {
               getProfile(profile).then(data => {
+                console.log(data)
                 const newProfiles = profileList.concat([{
                   name: data.full_name,
                   img: data.profile_image_url
