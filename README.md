@@ -14,6 +14,8 @@ If an individual would like to share information with a specific organization or
 
 `profile_image_url`: The url of a profile image associated with the user.
 
+`resume`: A link to a resume of the user
+
 `credit_card`: An object containing credit card information. *Highly recommended to put  this in a Private Enclave*
 
 `credit_card.card_number`: Credit card number
@@ -40,5 +42,26 @@ credit_card:
     card_expiry: 2021-06-17
     card_csv: 126
 ```
+
+## Profiles
+
+An individual may have several online personas. Enclave allows the individual to have multiple enclave profiles. The user can seperate thier information by namespacing their enclave.yaml file under a folder. For example the user may have a gaming profile and a professional profile. They would organize thier enclave.yaml files in the following fasion. 
+
+### Example of two profiles 
+
+Located at /keybase/public/nick.tesla/**gaming**/.enclave/enclave.yaml
+```yaml
+username: Gamerguy123
+email: gamingguy1234@gmail.com
+profile_image_url: https://coolgamerwebsite/gamerguy123/pic.jpg
+```
+Located at /keybase/public/nick.tesla/**professional**/.enclave/enclave.yaml
+```yaml
+username: NickolaTesla
+email: Nickola@teslaresearch.com
+phone_number: 416-678-9824
+resume: https://resumehoster.com/nick/resume.pdf
+```
+
 
 
