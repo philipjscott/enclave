@@ -6,7 +6,6 @@ import (
 	"os"
 	"strings"
 
-	"gopkg.in/yaml.v2"
 	"github.com/keybase/go-keybase-chat-bot/kbchat"
 )
 
