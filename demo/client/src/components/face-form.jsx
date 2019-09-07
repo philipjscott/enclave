@@ -14,6 +14,7 @@ export function FaceForm(props) {
       >
         <InputGroup
           id="profile-id"
+          autoFocus={true}
           placeholder="sokojoe"
           value={profile}
           onChange={(e) => setProfile(e.target.value)}
