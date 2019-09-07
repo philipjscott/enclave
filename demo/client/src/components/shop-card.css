@@ -13,5 +13,9 @@
     margin-bottom: 10px;
     border-radius: 50%;
     background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
   }
+
+
   
