@@ -9,7 +9,6 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "keybase-bot": "^3.0.0",
-    "mathjs": "^6.2.1"
+    "keybase-bot": "^3.0.0"
   }
 }
