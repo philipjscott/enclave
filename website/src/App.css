@@ -1,11 +1,6 @@
 .App {
   text-align: center;
-}
-
-.App-logo {
-  animation: App-logo-spin infinite 20s linear;
-  height: 40vmin;
-  pointer-events: none;
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif; font-size: 18px; font-style: normal; font-variant: normal; font-weight: 700; line-height: 26.4px;
 }
 
 .App-header {
@@ -17,17 +12,13 @@
   justify-content: center;
   font-size: calc(10px + 2vmin);
   color: white;
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif; font-style: normal; font-variant: normal; font-weight: 700; line-height: 26.4px;
 }
 
-.App-link {
-  color: #61dafb;
+.header-title {
+   font-size: 80px;
 }
 
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+.header-subtitle {
+  font-size: 22px;
 }
