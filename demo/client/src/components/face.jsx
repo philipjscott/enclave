@@ -4,8 +4,9 @@ import './face.css'
 
 export function Face (props) {
   const styles = {
-    backgroundImage: `url(${props.src})`
+    backgroundImage: `url(${props.img})`
   }
+  console.log(props.name, props.img)
   return (
     <Card className="face-container">
       <div className="face-img-container" style={styles} />
