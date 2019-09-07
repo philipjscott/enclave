@@ -1,5 +1,5 @@
 import React from 'react';
-import { Classes, Icon, Card, Elevation } from '@blueprintjs/core';
+import { Classes, Icon, Card, Elevation, Colors } from '@blueprintjs/core';
 import { withRouter } from 'react-router-dom';
 
 const pageStyle = {
@@ -30,12 +30,14 @@ const shortcuts = [
   {
     route: 'facewall',
     name: 'FaceWall',
-    icon: 'mugshot'
+    icon: 'mugshot',
+    color: Colors.DARK_GRAY3
   },
   {
     route: 'shop',
-    name: 'Shop',
-    icon: 'shop'
+    name: 'Onesie Store',
+    icon: 'shop',
+    color: Colors.FOREST4
   }
 ];
 export function Home() {
@@ -43,7 +45,7 @@ export function Home() {
     return withRouter(({ history }) => (
       <Card
         className={Classes.DARK}
-        style={cardStyle}
+        style={Object.assign({backgroundColor: shortcut.color}, cardStyle)}
         interactive={true}
         onClick={() => {
           history.push('/' + shortcut.route);
