@@ -1,9 +1,9 @@
 const express = require('express')
+const bodyParser = require('body-parser')
 const app = express()
-const port = 3000
+const port = 8000
 
-app.use('/hello', require('./apps/hello'))
-
-app.use('/bookface', require('./apps/bookface'))
+app.use(bodyParser())
+app.use('/enclave', require('./controllers/enclave'))
 
 app.listen(port, () => console.log(`Example app listening on port ${port}!`))
