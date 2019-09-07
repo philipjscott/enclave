@@ -23,7 +23,7 @@ If an individual would like to share information with a specific organization or
 `credit_card.card_csv`: Three digit code on back of card 
 
 ### Example public enclave.yaml file
-Located at /keybase/public/<username>/.enclave/enclave.yaml
+Located at /keybase/public/\<username>/.enclave/enclave.yaml
 ```yaml
 username: AliceRox
 full_name: Alice Bobation
@@ -31,7 +31,7 @@ email: alice1234@gmail.com
 profile_image_url: /keybase/public/<username>/.enclave/profilepic.png
 ```
 ### Example private enclave.yaml file
-Located at /keybase/private/<username>#<oraganization_name>/.enclave/enclave.yaml
+Located at /keybase/private/\<username>#<oraganization_name>/.enclave/enclave.yaml
 ```yaml
 username: AliceRox
 email: alice1234@gmail.com
