@@ -1,6 +1,7 @@
 import React from 'react';
 import { Overlay, Navbar, Alignment, Icon } from '@blueprintjs/core';
 import { ShopCard } from '../components/shop-card';
+import { ShopForm } from '../components/shop-form';
 
 const pageStyle = {
   width: '60rem',
@@ -17,6 +18,15 @@ const itemOne = {
 };
 
 export default class Shop extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      error: false,
+      displayForm: false,
+      selectedProduct: null
+    };
+  }
+
   render() {
     return (
       <div>
@@ -39,8 +49,23 @@ export default class Shop extends React.Component {
             }
             name={'Beemo Onesie'}
             price={199.99}
+            onClick={() =>
+              this.setState({
+                displayForm: true,
+                selectedProduct: 'Beemo Onesie'
+              })
+            }
           />
         </div>
+        <Overlay
+          isOpen={this.state.displayForm}
+          onClose={() => this.setState({ displayForm: false })}
+        >
+          <ShopForm
+            error={this.state.error}
+            productName={this.state.selectedProduct}
+          />
+        </Overlay>
       </div>
     );
   }
