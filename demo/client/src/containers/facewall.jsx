@@ -10,7 +10,7 @@ export function Facewall () {
     <div>
       <h1>Facewall</h1>
       <Face src={imgURL} name={name} />
-      <FaceAdd />
+      <FaceAdd onClick={() => console.log('hi')} />
     </div>
   )
 }
