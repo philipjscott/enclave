@@ -6,6 +6,7 @@ import (
 	"os"
 	"strings"
 
+	"gopkg.in/yaml.v2"
 	"github.com/keybase/go-keybase-chat-bot/kbchat"
 )
 
@@ -79,4 +80,16 @@ func listen(kbc *kbchat.API, sub kbchat.NewSubscription) {
 			}
 		}
 	}
+}
+
+func handleGroupCommand(fragments []string) {
+	if len(fragments) < 2 {
+		
+	}
+	// put everything in /Keybase/private/<user>/.enclave/groups.
+
+}
+
+type groupsSchema struct {
+	Groups map[string][]string `yaml:"groups"`
 }
