@@ -1,6 +1,8 @@
 import React from 'react';
 import './App.css';
 import backgroundImage from'./image.jpg'
+import Summary from './components/Summary/summary';
+import Specification from './components/Specification/spec';
 
 const inlineStyle = {
   backgroundImage: `url(${backgroundImage})`,
@@ -20,6 +22,10 @@ function App() {
           Privacy by design
         </p>
       </header>
+      <div>
+        <Summary/>
+        <Specification/>
+      </div>
     </div>
   );
 }

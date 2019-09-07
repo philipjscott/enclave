@@ -8,7 +8,8 @@ router.post('/', (req, res) => {
       res.send(profile.getJSON())
     })
     .catch(err => {
-      res.status(400).send(err)
+      console.log(err)
+      res.status(err.response.status).send(err.message)
     })
 })
 
