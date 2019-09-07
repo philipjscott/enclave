@@ -1,6 +1,7 @@
 .face-container {
   text-align: center;
-  margin: 20px;
+  display: inline-block;
+  margin: 10px;
   width: 200px;
   height: 240px;
 }

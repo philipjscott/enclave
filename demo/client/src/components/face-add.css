@@ -1,0 +1,9 @@
+.face-add-container {
+  width: 200px;
+  height: 240px;
+  margin: 10px;
+  font-size: 10em;
+  display: inline-block;
+  text-align: center;
+  vertical-align: top;
+}
