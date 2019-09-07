@@ -2,7 +2,7 @@
 
 ## Specification
 
-Enclave provides a specification allowing individuals to control and share personal information online in a standardized format. A individual will specify which information they would like to be made available in a yaml file. The location of the yaml file is `/keybase/public/<username>/enclave.yaml`. 
+Enclave provides a specification allowing individuals to control and share personal information online in a standardized format. A individual will specify which information they would like to be made available in a yaml file. The location of the yaml file should be at `/keybase/public/.enclave/<username>/enclave.yaml`. 
 
 
 `username`: The handle the user's identity and actions will be preformed behind.
@@ -17,5 +17,5 @@ Enclave provides a specification allowing individuals to control and share perso
 username: AliceRox
 full_name: Alice Bobation
 email: alice1234@gmail.com
-profile_image_url: /keybase/public/username/profilepic.png
+profile_image_url: /keybase/public/<username>/.enclave/profilepic.png
 ```
