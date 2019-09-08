@@ -6,8 +6,10 @@ import (
 	"os"
 	"strings"
 	"errors"
+	"io/ioutil"
 
 	"github.com/keybase/go-keybase-chat-bot/kbchat"
+	"gopkg.in/yaml.v2"
 )
 
 const (
@@ -111,6 +113,24 @@ func handleDataCommand(kbc *kbchat.API, fragments []string) (error){
 		return errors.New("Argument (" + fragments[0] + ") not recognized.")
 	}
 	return nil
+}
+
+func ReadFile(kbc *kbchat.API, filePath string) ([]byte) {
+	yamlFile, err := ioutil.ReadFile("conf.yaml")
+	if (err != nil) {
+		alert("Error reading file; $s", err.Error())
+		sendSelfMessage(kbc, fmt.Sprintf("Error reading file: %s\n", err.Error()))
+	}
+	return yamlFile
+}
+
+func UnmarshalFile(kbc *kbchat.API, yamlFile []byte) {
+	m := make(map[interface{}]interface{})
+	err := yaml.Unmarshal(yamlFile, &m)
+	if err != nil {
+		alert("Unmarshal: %v", err)
+		sendSelfMessage(kbc, fmt.Sprintf("Error unmarshalling file: %s\n", err.Error()))
+	}
 }
 
 type groupsSchema struct {
