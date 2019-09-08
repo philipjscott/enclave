@@ -105,6 +105,19 @@ func handleDataCommand(kbc *kbchat.API, fragments []string) (error){
 	switch firstArg:= fragments[0]; firstArg {
 	case "print": 
 		fmt.Println("Handling print argument")
+		file, err := ReadFile("/keybase/private/sokojoe/.enclave/enclave.yaml")
+		if (err != nil) {
+			alert("Error reading file; $s", err.Error())
+			sendSelfMessage(kbc, fmt.Sprintf("Error reading file: %s\n", err.Error()))
+			return nil
+		}
+		data, err := UnmarshalFile(file)
+		if (err != nil) {
+			alert("Unmarshal: %v", err)
+			sendSelfMessage(kbc, fmt.Sprintf("Error unmarshalling file: %s\n", err.Error()))
+			return nil
+		}
+		fmt.Println(data["lol"])
 	case "set":
 		fmt.Println("Handling set argument")
 	case "unset":
@@ -115,23 +128,21 @@ func handleDataCommand(kbc *kbchat.API, fragments []string) (error){
 	return nil
 }
 
-func ReadFile(kbc *kbchat.API, filePath string) ([]byte) {
-	yamlFile, err := ioutil.ReadFile("conf.yaml")
+func ReadFile(filePath string) ([]byte, error) {
+	yamlFile, err := ioutil.ReadFile(filePath)
 	if (err != nil) {
-		alert("Error reading file; $s", err.Error())
-		sendSelfMessage(kbc, fmt.Sprintf("Error reading file: %s\n", err.Error()))
+		return nil, err
 	}
-	return yamlFile
+	return yamlFile, nil
 }
 
-func UnmarshalFile(kbc *kbchat.API, yamlFile []byte) (map[string]interface{}) {
+func UnmarshalFile(yamlFile []byte) (map[string]interface{}, error) {
 	m := make(map[string]interface{})
 	err := yaml.Unmarshal(yamlFile, &m)
-	if err != nil {
-		alert("Unmarshal: %v", err)
-		sendSelfMessage(kbc, fmt.Sprintf("Error unmarshalling file: %s\n", err.Error()))
+	if (err != nil) {
+		return nil, err
 	}
-	return m
+	return m, nil
 }
 
 type groupsSchema struct {
