@@ -105,19 +105,19 @@ func handleDataCommand(kbc *kbchat.API, fragments []string) (error){
 	switch firstArg:= fragments[0]; firstArg {
 	case "print": 
 		fmt.Println("Handling print argument")
-		file, err := ReadFile("/keybase/private/sokojoe/.enclave/enclave.yaml")
+		file, err := ReadFile(fmt.Sprintf("/keybase/private/sokojoe#%s/.enclave/enclave.yaml", fragments[1]))
 		if (err != nil) {
 			alert("Error reading file; $s", err.Error())
-			sendSelfMessage(kbc, fmt.Sprintf("Error reading file: %s\n", err.Error()))
+			sendSelfMessage(kbc, fmt.Sprintf("Error: File /keybase/private/sokojoe#%s/.enclave/enclave.yaml does not exist", fragments[1]))
 			return nil
 		}
 		data, err := UnmarshalFile(file)
 		if (err != nil) {
 			alert("Unmarshal: %v", err)
-			sendSelfMessage(kbc, fmt.Sprintf("Error unmarshalling file: %s\n", err.Error()))
+			sendSelfMessage(kbc, fmt.Sprintf("Error: File /keybase/private/sokojoe#%s/.enclave/enclave.yaml is not a valid yaml file", fragments[1]))
 			return nil
 		}
-		fmt.Println(data["lol"])
+		sendSelfMessage(kbc, fmt.Sprintf("%s", data))
 	case "set":
 		fmt.Println("Handling set argument")
 	case "unset":
