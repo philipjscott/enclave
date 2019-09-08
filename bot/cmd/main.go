@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/json"
 	"errors"
 	"flag"
 	"fmt"
@@ -75,7 +76,10 @@ func listen(kbc *kbchat.API, sub kbchat.NewSubscription) {
 		command = command[1:]
 		switch command {
 		case "group":
-			handleGroupCommand(kbc, fragments)
+			err := handleGroupCommand(kbc, fragments[1:])
+			if err != nil {
+				sendSelfMessage(kbc, fmt.Sprintf("Error parsing command: %s\n", err.Error()))
+			}
 		case "data":
 			err := handleDataCommand(kbc, fragments[1:])
 			if err != nil {
@@ -93,11 +97,25 @@ func listen(kbc *kbchat.API, sub kbchat.NewSubscription) {
 func handleGroupCommand(kbc *kbchat.API, fragments []string) error {
 	if len(fragments) < 2 {
 		err := errors.New("Arguments < 2")
-		sendSelfMessage(kbc, fmt.Sprintf("Options: add, create, remove, print"))
 		return err
 	}
-	// put everything in /Keybase/private/<user>/.enclave/groups.yaml
-	switch fragments[1] {
+
+	// Check for groups file, create one if it doesn't exist.
+	GROUPS_NAME := "/keybase/private/" + kbc.GetUsername() + "/.enclave/groups.yaml"
+	var groupsFile []byte
+	groupsFile, err := ReadFile(GROUPS_NAME)
+	if err != nil {
+		_, _ = CreateFile(GROUPS_NAME)
+		groupsFile, err = ReadFile(GROUPS_NAME)
+	}
+	groupsData, err := UnmarshalFile(groupsFile)
+	if err != nil {
+		alert("Unmarshal: %v", err)
+		sendSelfMessage(kbc, fmt.Sprintf("Error unmarshalling file: %s\n", err.Error()))
+		return nil
+	}
+	fmt.Println(StringifyJSON(groupsData))
+	switch fragments[0] {
 	case "add":
 		sendSelfMessage(kbc, fmt.Sprintf("Add"))
 	case "create":
@@ -105,12 +123,9 @@ func handleGroupCommand(kbc *kbchat.API, fragments []string) error {
 	case "remove":
 		sendSelfMessage(kbc, fmt.Sprintf("Remove"))
 	case "print":
-		sendSelfMessage(kbc, fmt.Sprintf("Print"))
+		sendSelfMessage(kbc, fmt.Sprintf(StringifyJSON(groupsData)))
 	default:
-		_, err := sendSelfMessage(kbc, fmt.Sprintf("Invalid command: %s\n", fragments[0]))
-		if err != nil {
-			alert("Error receiving chat message; %s", err.Error())
-		}
+		return errors.New("Argument (" + fragments[0] + ") not recognized.")
 	}
 	return nil
 }
@@ -120,17 +135,18 @@ func handleDataCommand(kbc *kbchat.API, fragments []string) error {
 		err := errors.New("Arguments < 2")
 		return err
 	}
+
 	switch firstArg := fragments[0]; firstArg {
 	case "print":
 		fmt.Println("Handling print argument")
 		file, err := ReadFile("/keybase/private/sokojoe/.enclave/enclave.yaml")
-		if (err != nil) {
+		if err != nil {
 			alert("Error reading file; $s", err.Error())
 			sendSelfMessage(kbc, fmt.Sprintf("Error reading file: %s\n", err.Error()))
 			return nil
 		}
 		data, err := UnmarshalFile(file)
-		if (err != nil) {
+		if err != nil {
 			alert("Unmarshal: %v", err)
 			sendSelfMessage(kbc, fmt.Sprintf("Error unmarshalling file: %s\n", err.Error()))
 			return nil
@@ -145,31 +161,33 @@ func handleDataCommand(kbc *kbchat.API, fragments []string) error {
 	}
 	return nil
 }
-
-<<<<<<< HEAD
-func ReadFile(kbc *kbchat.API, filePath string) []byte {
-	yamlFile, err := ioutil.ReadFile("conf.yaml")
+func StringifyJSON(v interface{}) string {
+	bytes, err := json.MarshalIndent(v, "", "  ")
 	if err != nil {
-		alert("Error reading file; $s", err.Error())
-		sendSelfMessage(kbc, fmt.Sprintf("Error reading file: %s\n", err.Error()))
-=======
+		return "error"
+	}
+	return string(bytes)
+}
+
 func ReadFile(filePath string) ([]byte, error) {
 	yamlFile, err := ioutil.ReadFile(filePath)
-	if (err != nil) {
+	if err != nil {
 		return nil, err
->>>>>>> f0e345f6add4197847119d1d38876054b2c50e85
+	}
+	return yamlFile, nil
+}
+func CreateFile(filePath string) (*os.File, error) {
+	yamlFile, err := os.Create(filePath)
+	if err != nil {
+		return nil, err
 	}
 	return yamlFile, nil
 }
 
-<<<<<<< HEAD
-func UnmarshalFile(kbc *kbchat.API, yamlFile []byte) map[string]interface{} {
-=======
 func UnmarshalFile(yamlFile []byte) (map[string]interface{}, error) {
->>>>>>> f0e345f6add4197847119d1d38876054b2c50e85
 	m := make(map[string]interface{})
 	err := yaml.Unmarshal(yamlFile, &m)
-	if (err != nil) {
+	if err != nil {
 		return nil, err
 	}
 	return m, nil
