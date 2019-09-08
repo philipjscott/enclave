@@ -6,9 +6,8 @@ export function ShopCard(props) {
   const styles = {
     backgroundImage: `url(${props.img})`
   };
-  console.log(props.name, props.price, props.img);
   return (
-    <Card className='shop-card-container' interactive={true}>
+    <Card className='shop-card-container' interactive={true} onClick={props.onClick}>
       <div className='shop-card-img-container' style={styles} />
       <H4>{props.name}</H4>
       <p>${props.price}</p>
