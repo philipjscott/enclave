@@ -76,9 +76,11 @@ func listen(kbc *kbchat.API, sub kbchat.NewSubscription) {
 		switch command {
 		case "group":
 		case "data":
-			err := handleDataCommand(kbc, fragments[1:])
+			success, err := handleDataCommand(kbc, fragments[1:])
 			if err != nil {
 				sendSelfMessage(kbc, fmt.Sprintf("Error: %s\n", err.Error()))
+			} else {
+				sendSelfMessage(kbc, fmt.Sprintf("Success: %s", success))
 			}
 		default:
 			_, err := sendSelfMessage(kbc, fmt.Sprintf("Invalid command: %s\n", command))
@@ -97,51 +99,58 @@ func handleGroupCommand(kbc *kbchat.API, fragments []string) {
 
 }
 
-func handleDataCommand(kbc *kbchat.API, fragments []string) (error){
+func handleDataCommand(kbc *kbchat.API, fragments []string) (string, error){
 	if len(fragments) < 2 {
 		err := errors.New("Arguments < 2");
-		return err
+		return "", err
 	}
 	switch firstArg:= fragments[0]; firstArg {
 	case "print": 
 		fmt.Println("Handling print argument")
-		file, err := ReadFile(fmt.Sprintf("/keybase/private/sokojoe#%s/.enclave/enclave.yaml", fragments[1]))
+		var filePath = fmt.Sprintf("/keybase/private/sokojoe#%s/.enclave/enclave.yaml", fragments[1])
+		file, err := ReadFile(filePath)
 		if (err != nil) {
 			alert("Error reading file; $s", err.Error())
-			sendSelfMessage(kbc, fmt.Sprintf("File /keybase/private/sokojoe#%s/.enclave/enclave.yaml does not exist", fragments[1]))
-			return nil
+			return "", errors.New(fmt.Sprintf("File %s does not exist", filePath))
 		}
-		data, err := UnmarshalFile(file)
-		if (err != nil) {
-			alert("Unmarshal: %v", err)
-			sendSelfMessage(kbc, fmt.Sprintf("File /keybase/private/sokojoe#%s/.enclave/enclave.yaml is not a valid yaml file", fragments[1]))
-			return nil
-		}
-		sendSelfMessage(kbc, fmt.Sprintf("%s", data))
+		sendSelfMessage(kbc, fmt.Sprintf("%s",  "```\n" + string(file) + "```"))
 	case "set":
 		if len(fragments) < 4 {
 			err := errors.New("Arguments < 4");
-			return err
+			return "", err
 		}
+		var filePath = fmt.Sprintf("/keybase/private/sokojoe#%s/.enclave/enclave.yaml", fragments[2])
 		fmt.Println("Handling set argument")
-		file, err := ReadFile(fmt.Sprintf("/keybase/private/sokojoe#%s/.enclave/enclave.yaml", fragments[2]))
+		file, err := ReadFile(filePath)
 		if (err != nil) {
 			alert("Error reading file; $s", err.Error())
-			return errors.New(fmt.Sprintf("Error: File /keybase/private/sokojoe#%s/.enclave/enclave.yaml does not exist", fragments[2]))
+			return "", errors.New(fmt.Sprintf("File %s does not exist", filePath))
 		}
 		data, err := UnmarshalFile(file)
 		if (err != nil) {
 			alert("Unmarshal: %v", err)
-			return errors.New(fmt.Sprintf("Error: File /keybase/private/sokojoe#%s/.enclave/enclave.yaml is not a valid yaml file", fragments[2]))
+			return "", errors.New(fmt.Sprintf("File %s is not a valid yaml file", filePath))
 		}
 		data[fragments[3]] = fragments[4]
+
+		bytes, err := MarshalFile(data)
+		if (err != nil) {
+			return "", errors.New(fmt.Sprintf("Error marshalling file"))
+		}
+
+		err = WriteFile(filePath, bytes)
+		if (err != nil) {
+			return "", errors.New(fmt.Sprintf("Could not write to file %s", filePath))
+		}
+
+		return "Variable was set!", nil
 		
 	case "unset":
 		fmt.Println("Handling unset argument")
 	default:
-		return errors.New("Argument (" + fragments[0] + ") not recognized.")
+		return "", errors.New("Argument (" + fragments[0] + ") not recognized.")
 	}
-	return nil
+	return "", nil
 }
 
 func ReadFile(filePath string) ([]byte, error) {
@@ -164,6 +173,14 @@ func UnmarshalFile(yamlFile []byte) (map[string]interface{}, error) {
 		return nil, err
 	}
 	return m, nil
+}
+
+func MarshalFile(bytes map[string]interface{}) ([]byte, error) {
+	data, err := yaml.Marshal(bytes)
+	if (err != nil) {
+		return nil, err
+	}
+	return data, nil
 }
 
 type groupsSchema struct {
