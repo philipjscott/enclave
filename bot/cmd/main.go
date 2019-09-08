@@ -117,24 +117,47 @@ func handleGroupCommand(kbc *kbchat.API, fragments []string) error {
 		return nil
 	}
 	fmt.Println(StringifyJSON(groupsData))
+
+	// Handle group commands
+	targetGroup := fragments[1]
 	switch fragments[0] {
 	case "add":
 		sendSelfMessage(kbc, fmt.Sprintf("Add"))
+
 	case "create":
 		sendSelfMessage(kbc, fmt.Sprintf("Create"))
+		if checkGroup(groupsData, targetGroup) {
+			sendSelfMessage(kbc, fmt.Sprintf("Group %s exists!", targetGroup))
+		} else {
+			groupsData[targetGroup] = []string{}
+			data, _ := MarshalFile(groupsData)
+			error := WriteFile(GROUPS_FILE_NAME, data)
+			if error != nil {
+				sendSelfMessage(kbc, fmt.Sprintf("Error while creating group %s", targetGroup))
+				return nil
+			}
+			sendSelfMessage(kbc, fmt.Sprintf("Group %s created!", targetGroup))
+		}
 	case "remove":
 		sendSelfMessage(kbc, fmt.Sprintf("Remove"))
 	case "print":
-		sendSelfMessage(kbc, fmt.Sprintf(StringifyJSON(groupsData)))
+		// sendSelfMessage(kbc, fmt.Sprintf(StringifyJSON(groupsData)))
+		sendSelfMessage(kbc, fmt.Sprintf("```%s```", groupsFile))
 	default:
 		return errors.New("Argument (" + fragments[0] + ") not recognized.")
 	}
 	return nil
 }
+func checkGroup(groupsData map[string]interface{}, group string) bool {
+	if _, ok := groupsData["foo"]; ok {
+		return true
+	}
+	return false
+}
 
-func handleDataCommand(kbc *kbchat.API, fragments []string) (string, error){
+func handleDataCommand(kbc *kbchat.API, fragments []string) (string, error) {
 	if len(fragments) < 2 {
-		err := errors.New("Arguments < 2");
+		err := errors.New("Arguments < 2")
 		return "", err
 	}
 
@@ -143,20 +166,20 @@ func handleDataCommand(kbc *kbchat.API, fragments []string) (string, error){
 		fmt.Println("Handling print argument")
 		var filePath = fmt.Sprintf("/keybase/private/sokojoe#%s/.enclave/enclave.yaml", fragments[1])
 		file, err := ReadFile(filePath)
-		if (err != nil) {
+		if err != nil {
 			alert("Error reading file; $s", err.Error())
 			return "", errors.New(fmt.Sprintf("File %s does not exist", filePath))
 		}
-		sendSelfMessage(kbc, fmt.Sprintf("%s",  "```\n" + string(file) + "```"))
+		sendSelfMessage(kbc, fmt.Sprintf("%s", "```\n"+string(file)+"```"))
 	case "set":
 		if len(fragments) < 4 {
-			err := errors.New("Arguments < 4");
+			err := errors.New("Arguments < 4")
 			return "", err
 		}
 		var filePath = fmt.Sprintf("/keybase/private/sokojoe#%s/.enclave/enclave.yaml", fragments[2])
 		fmt.Println("Handling set argument")
 		file, err := ReadFile(filePath)
-		if (err != nil) {
+		if err != nil {
 			alert("Error reading file; $s", err.Error())
 			return "", errors.New(fmt.Sprintf("File %s does not exist", filePath))
 		}
@@ -168,17 +191,17 @@ func handleDataCommand(kbc *kbchat.API, fragments []string) (string, error){
 		data[fragments[3]] = fragments[4]
 
 		bytes, err := MarshalFile(data)
-		if (err != nil) {
+		if err != nil {
 			return "", errors.New(fmt.Sprintf("Error marshalling file"))
 		}
 
 		err = WriteFile(filePath, bytes)
-		if (err != nil) {
+		if err != nil {
 			return "", errors.New(fmt.Sprintf("Could not write to file %s", filePath))
 		}
 
 		return "Variable was set!", nil
-		
+
 	case "unset":
 		fmt.Println("Handling unset argument")
 	default:
@@ -186,6 +209,8 @@ func handleDataCommand(kbc *kbchat.API, fragments []string) (string, error){
 	}
 	return "", nil
 }
+
+/* Helper Functions */
 func StringifyJSON(v interface{}) string {
 	bytes, err := json.MarshalIndent(v, "", "  ")
 	if err != nil {
@@ -225,12 +250,8 @@ func UnmarshalFile(yamlFile []byte) (map[string]interface{}, error) {
 
 func MarshalFile(bytes map[string]interface{}) ([]byte, error) {
 	data, err := yaml.Marshal(bytes)
-	if (err != nil) {
+	if err != nil {
 		return nil, err
 	}
 	return data, nil
-}
-
-type groupsSchema struct {
-	Groups map[string][]string `yaml:"groups"`
 }
