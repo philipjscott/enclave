@@ -97,8 +97,11 @@ func listen(kbc *kbchat.API, sub kbchat.NewSubscription) {
 }
 
 func handleGroupCommand(kbc *kbchat.API, fragments []string) error {
-	if len(fragments) < 2 {
-		err := errors.New("Arguments < 2")
+	if fragments[0] != "print" && len(fragments) < 2 {
+		err := errors.New("Missing arguments")
+		return err
+	} else if fragments[0] == "print" && len(fragments) < 1 {
+		err := errors.New("Missing arguments")
 		return err
 	}
 
@@ -118,12 +121,26 @@ func handleGroupCommand(kbc *kbchat.API, fragments []string) error {
 	}
 
 	// Handle group commands
-	targetGroup := fragments[1]
 	switch fragments[0] {
 	case "add":
-		sendSelfMessage(kbc, fmt.Sprintf("Add"))
+		targetGroup := fragments[1]
+		if !checkGroup(groupsData, targetGroup) {
+			sendSelfMessage(kbc, fmt.Sprintf("Group '%s' doesn't exist!", targetGroup))
+		} else {
+			newEntity := fragments[2]
+			var groupDataSlice []string = groupsData[targetGroup].([]string)
+			groupsData[targetGroup] = append(groupDataSlice, newEntity)
+			data, _ := MarshalFile(groupsData)
+			error := WriteFile(GROUPS_FILE_NAME, data)
+			if error != nil {
+				sendSelfMessage(kbc, fmt.Sprintf("Error while adding to group '%s'", targetGroup))
+				return nil
+			}
+			sendSelfMessage(kbc, fmt.Sprintf("'%s' was added to group '%s'!", newEntity, targetGroup))
+		}
 
 	case "create":
+		targetGroup := fragments[1]
 		if checkGroup(groupsData, targetGroup) {
 			sendSelfMessage(kbc, fmt.Sprintf("Group '%s' created!", targetGroup))
 		} else {
@@ -137,6 +154,7 @@ func handleGroupCommand(kbc *kbchat.API, fragments []string) error {
 			sendSelfMessage(kbc, fmt.Sprintf("Group '%s' created!", targetGroup))
 		}
 	case "remove":
+		targetGroup := fragments[1]
 		if checkGroup(groupsData, targetGroup) == false {
 			sendSelfMessage(kbc, fmt.Sprintf("Group '%s' doesn't exist!", targetGroup))
 		} else {
@@ -150,6 +168,15 @@ func handleGroupCommand(kbc *kbchat.API, fragments []string) error {
 			sendSelfMessage(kbc, fmt.Sprintf("Group '%s' deleted!", targetGroup))
 		}
 	case "print":
+		if len(fragments) > 1 {
+			targetGroup := fragments[1]
+			if checkGroup(groupsData, targetGroup) == false {
+				sendSelfMessage(kbc, fmt.Sprintf("Group '%s' doesn't exist!", targetGroup))
+			}
+			targetGroupdata := groupsData[targetGroup]
+			sendSelfMessage(kbc, fmt.Sprintf("```%s```", targetGroupdata))
+			return nil
+		}
 		sendSelfMessage(kbc, fmt.Sprintf("```%s```", groupsFile))
 	default:
 		return errors.New("Argument (" + fragments[0] + ") not recognized.")
