@@ -3,7 +3,7 @@ import { Overlay, Navbar, Alignment, Icon } from '@blueprintjs/core';
 import { Face } from '../components/face';
 import { FaceForm } from '../components/face-form';
 import { FaceAdd } from '../components/face-add';
-import { getProfile } from '../api/rest';
+import { getPublicProfile } from '../api/rest';
 
 const pageStyle = {
   width: '60rem',
@@ -61,7 +61,7 @@ export class Facewall extends React.Component {
             <FaceForm
               error={error}
               onSubmit={profile => {
-                getProfile(profile)
+                getPublicProfile(profile)
                   .then(data => {
                     const newProfiles = profileList.concat([
                       {

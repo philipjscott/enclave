@@ -1,12 +1,13 @@
 package main
 
 import (
+	"encoding/json"
+	"errors"
 	"flag"
 	"fmt"
+	"io/ioutil"
 	"os"
 	"strings"
-	"errors"
-	"io/ioutil"
 
 	"github.com/keybase/go-keybase-chat-bot/kbchat"
 	"gopkg.in/yaml.v2"
@@ -75,6 +76,10 @@ func listen(kbc *kbchat.API, sub kbchat.NewSubscription) {
 		command = command[1:]
 		switch command {
 		case "group":
+			err := handleGroupCommand(kbc, fragments[1:])
+			if err != nil {
+				sendSelfMessage(kbc, fmt.Sprintf("Error parsing command: %s\n", err.Error()))
+			}
 		case "data":
 			success, err := handleDataCommand(kbc, fragments[1:])
 			if err != nil {
@@ -91,12 +96,40 @@ func listen(kbc *kbchat.API, sub kbchat.NewSubscription) {
 	}
 }
 
-func handleGroupCommand(kbc *kbchat.API, fragments []string) {
+func handleGroupCommand(kbc *kbchat.API, fragments []string) error {
 	if len(fragments) < 2 {
-		
+		err := errors.New("Arguments < 2")
+		return err
 	}
-	// put everything in /Keybase/private/<user>/.enclave/groups.
 
+	// Check for groups file, create one if it doesn't exist.
+	GROUPS_FILE_NAME := "/keybase/private/" + kbc.GetUsername() + "/.enclave/groups.yaml"
+	var groupsFile []byte
+	groupsFile, err := ReadFile(GROUPS_FILE_NAME)
+	if err != nil {
+		_ = WriteFile(GROUPS_FILE_NAME, nil)
+		groupsFile, err = ReadFile(GROUPS_FILE_NAME)
+	}
+	groupsData, err := UnmarshalFile(groupsFile)
+	if err != nil {
+		alert("Unmarshal: %v", err)
+		sendSelfMessage(kbc, fmt.Sprintf("Error unmarshalling file: %s\n", err.Error()))
+		return nil
+	}
+	fmt.Println(StringifyJSON(groupsData))
+	switch fragments[0] {
+	case "add":
+		sendSelfMessage(kbc, fmt.Sprintf("Add"))
+	case "create":
+		sendSelfMessage(kbc, fmt.Sprintf("Create"))
+	case "remove":
+		sendSelfMessage(kbc, fmt.Sprintf("Remove"))
+	case "print":
+		sendSelfMessage(kbc, fmt.Sprintf(StringifyJSON(groupsData)))
+	default:
+		return errors.New("Argument (" + fragments[0] + ") not recognized.")
+	}
+	return nil
 }
 
 func handleDataCommand(kbc *kbchat.API, fragments []string) (string, error){
@@ -104,8 +137,9 @@ func handleDataCommand(kbc *kbchat.API, fragments []string) (string, error){
 		err := errors.New("Arguments < 2");
 		return "", err
 	}
-	switch firstArg:= fragments[0]; firstArg {
-	case "print": 
+
+	switch firstArg := fragments[0]; firstArg {
+	case "print":
 		fmt.Println("Handling print argument")
 		var filePath = fmt.Sprintf("/keybase/private/sokojoe#%s/.enclave/enclave.yaml", fragments[1])
 		file, err := ReadFile(filePath)
@@ -127,7 +161,7 @@ func handleDataCommand(kbc *kbchat.API, fragments []string) (string, error){
 			return "", errors.New(fmt.Sprintf("File %s does not exist", filePath))
 		}
 		data, err := UnmarshalFile(file)
-		if (err != nil) {
+		if err != nil {
 			alert("Unmarshal: %v", err)
 			return "", errors.New(fmt.Sprintf("File %s is not a valid yaml file", filePath))
 		}
@@ -152,16 +186,30 @@ func handleDataCommand(kbc *kbchat.API, fragments []string) (string, error){
 	}
 	return "", nil
 }
+func StringifyJSON(v interface{}) string {
+	bytes, err := json.MarshalIndent(v, "", "  ")
+	if err != nil {
+		return "error"
+	}
+	return string(bytes)
+}
 
 func ReadFile(filePath string) ([]byte, error) {
 	yamlFile, err := ioutil.ReadFile(filePath)
-	if (err != nil) {
+	if err != nil {
+		return nil, err
+	}
+	return yamlFile, nil
+}
+func CreateFile(filePath string) (*os.File, error) {
+	yamlFile, err := os.Create(filePath)
+	if err != nil {
 		return nil, err
 	}
 	return yamlFile, nil
 }
 
-func WriteFile(filePath string, data []byte) (error) {
+func WriteFile(filePath string, data []byte) error {
 	err := ioutil.WriteFile(filePath, data, 0644)
 	return err
 }
@@ -169,7 +217,7 @@ func WriteFile(filePath string, data []byte) (error) {
 func UnmarshalFile(yamlFile []byte) (map[string]interface{}, error) {
 	m := make(map[string]interface{})
 	err := yaml.Unmarshal(yamlFile, &m)
-	if (err != nil) {
+	if err != nil {
 		return nil, err
 	}
 	return m, nil
