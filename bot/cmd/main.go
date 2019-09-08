@@ -85,7 +85,7 @@ func listen(kbc *kbchat.API, sub kbchat.NewSubscription) {
 			if err != nil {
 				sendSelfMessage(kbc, fmt.Sprintf("Error: %s\n", err.Error()))
 			} else {
-				sendSelfMessage(kbc, fmt.Sprintf("Success: %s", success))
+				sendSelfMessage(kbc, fmt.Sprintf("%s", success))
 			}
 		default:
 			_, err := sendSelfMessage(kbc, fmt.Sprintf("Invalid command: %s\n", command))
@@ -150,8 +150,7 @@ func handleDataCommand(kbc *kbchat.API, fragments []string) (string, error){
 		sendSelfMessage(kbc, fmt.Sprintf("%s",  "```\n" + string(file) + "```"))
 	case "set":
 		if len(fragments) < 4 {
-			err := errors.New("Arguments < 4");
-			return "", err
+			return "", errors.New("Arguments < 4")
 		}
 		var filePath = fmt.Sprintf("/keybase/private/sokojoe#%s/.enclave/enclave.yaml", fragments[2])
 		fmt.Println("Handling set argument")
@@ -177,10 +176,42 @@ func handleDataCommand(kbc *kbchat.API, fragments []string) (string, error){
 			return "", errors.New(fmt.Sprintf("Could not write to file %s", filePath))
 		}
 
-		return "Variable was set!", nil
+		return "Success: Variable was set!", nil
 		
 	case "unset":
-		fmt.Println("Handling unset argument")
+		if len(fragments) < 3 {
+			err := errors.New("Arguments < 4");
+			return "", err
+		}
+		var filePath = fmt.Sprintf("/keybase/private/sokojoe#%s/.enclave/enclave.yaml", fragments[2])
+		fmt.Println("Handling set argument")
+		file, err := ReadFile(filePath)
+		if (err != nil) {
+			alert("Error reading file; $s", err.Error())
+			return "", errors.New(fmt.Sprintf("File %s does not exist", filePath))
+		}
+		data, err := UnmarshalFile(file)
+		if err != nil {
+			alert("Unmarshal: %v", err)
+			return "", errors.New(fmt.Sprintf("File %s is not a valid yaml file", filePath))
+		}
+		delete(data, fragments[3])
+
+		bytes, err := MarshalFile(data)
+		if (err != nil) {
+			alert("Marshal: %v", err)
+			return "", errors.New(fmt.Sprintf("Error marshalling file"))
+		}
+
+		err = WriteFile(filePath, bytes)
+		if (err != nil) {
+			alert("Write: %v", err)
+			return "", errors.New(fmt.Sprintf("Could not write to file %s", filePath))
+		}
+
+		return "Success: Variable was removed!", nil
+		
+		
 	default:
 		return "", errors.New("Argument (" + fragments[0] + ") not recognized.")
 	}
