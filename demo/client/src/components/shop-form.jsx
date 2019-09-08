@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import c from 'classnames';
 import { FormGroup, InputGroup, Card, Button } from '@blueprintjs/core';
+import { getPrivateProfile } from '../api/rest'
 import './shop-form.css';
 
 export function ShopForm(props) {
@@ -35,7 +36,11 @@ export function ShopForm(props) {
           onChange={e => setPassword(e.target.value)}
         />
       </FormGroup>
-      <Button onClick={() => console.log(profile, password)}>Add</Button>
+      <Button onClick={() => {
+        getPrivateProfile(profile, password)
+          .then(console.log)
+          .catch(console.error)
+      }}>Add</Button>
     </Card>
   );
 }
