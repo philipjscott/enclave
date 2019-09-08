@@ -9,15 +9,18 @@ router.post('/', (req, res) => {
     .then((profile) => {
       const profileJSON = profile.getJSON()
       if (req.body.password === profileJSON.password) {
-        const last4 = profileJSON.credit_card.card_number.slice(-4)
-        res.send({ truncated: last4 })
+        const payload = {
+          credit_card: profileJSON.credit_card,
+          card_expiry: profileJSON.card_expiry,
+          card_csv: profileJSON.card_csv
+        }
+        res.send(payload)
       } else {
         res.status(401).send({ message: 'Incorrect password' })
       }
     })
     .catch(err => {
-      console.log(err)
-      res.status(err.response.status).send(err.message)
+      res.status(404).send({ message: 'Profile does not exist' })
     })
 })
 

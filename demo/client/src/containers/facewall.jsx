@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { Link } from 'react-router-dom'
 import { Overlay, Navbar, Alignment, Icon } from '@blueprintjs/core';
 import { Face } from '../components/face';
 import { FaceForm } from '../components/face-form';
@@ -11,7 +12,8 @@ const pageStyle = {
 };
 
 const iconStyle = {
-  marginRight: '1rem'
+  marginRight: '1rem',
+  color: 'white'
 };
 
 const dummyData = [
@@ -40,11 +42,13 @@ export class Facewall extends React.Component {
         <Navbar className='bp3-dark'>
           <Navbar.Group align={Alignment.CENTER}>
             <Navbar.Heading>
-              <Icon
-                style={iconStyle}
-                iconSize={Icon.SIZE_LARGE}
-                icon='mugshot'
-              ></Icon>
+              <Link to="/">
+                <Icon
+                  style={iconStyle}
+                  iconSize={Icon.SIZE_LARGE}
+                  icon='mugshot'
+                ></Icon>
+              </Link>
               Facewall
             </Navbar.Heading>
           </Navbar.Group>

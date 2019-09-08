@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom'
 import { Overlay, Navbar, Alignment, Icon, Colors } from '@blueprintjs/core';
 import { ShopCard } from '../components/shop-card';
 import { ShopForm } from '../components/shop-form';
@@ -9,7 +10,8 @@ const pageStyle = {
 };
 
 const iconStyle = {
-  marginRight: '1rem'
+  marginRight: '1rem',
+  color: 'white'
 };
 
 const MAIN_COLOR = Colors.FOREST4;
@@ -50,7 +52,6 @@ export default class Shop extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      error: false,
       displayForm: false,
       selectedProduct: null
     };
@@ -62,11 +63,13 @@ export default class Shop extends React.Component {
         <Navbar style={{ backgroundColor: MAIN_COLOR, color: Colors.WHITE }}>
           <Navbar.Group align={Alignment.CENTER}>
             <Navbar.Heading>
-              <Icon
-                style={iconStyle}
-                iconSize={Icon.SIZE_LARGE}
-                icon='shop'
-              ></Icon>
+              <Link to="/">
+                <Icon
+                  style={iconStyle}
+                  iconSize={Icon.SIZE_LARGE}
+                  icon='shop'
+                ></Icon>
+              </Link>
               Onesies.com
             </Navbar.Heading>
           </Navbar.Group>
@@ -92,7 +95,7 @@ export default class Shop extends React.Component {
           onClose={() => this.setState({ displayForm: false })}
         >
           <ShopForm
-            error={this.state.error}
+            onSuccess={() => this.setState({ displayForm: false })}
             product={this.state.selectedProduct}
           />
         </Overlay>
