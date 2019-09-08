@@ -1,9 +1,9 @@
 const express = require('express')
-const getProfile = require('enclavejs')
+const { getPublicProfile } = require('enclavejs')
 const router = express.Router()
 
 router.post('/', (req, res) => {
-  getProfile(req.body.profile)
+  getPublicProfile(req.body.profile)
     .then(profile => {
       res.send(profile.getJSON())
     })
