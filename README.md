@@ -1,87 +1,48 @@
-# Enclave
+# Enclave ⛰️
 
-## Specification
+## Inspiration
+The idea that users should **own** and **control** their personal data. We wanted to design a system where users do just that. A secure **enclave** for your data in the vast realm of the web. A big thanks to  Dr. Ann Cavoukian for her moving speech and helping us come up with the name.
 
-Enclave provides a specification allowing individuals to control and share personal information online in a standardized format. A individual will specify which information they would like to be made available in a yaml file. The location of the yaml file should be at `/keybase/public/<username>/.enclave/enclave.yaml`.
+## What it does
+* Enclave is a protocol for making personal data accessible to organizations while keeping the user in control. Users create enclave.yaml files in public and private file locations and specify the infomation they would like to share through key value pairs. 
 
-If an individual would like to share information with a specific organization or platform they should put the file in `/keybase/private/<username>#<organization_name>/.enclave/enclave.yaml`
+* Enclave Bot is a Keybase chat bot that allows users to configure their Enclave.yaml files without touching the filesystem. 
 
-`username`: The handle the user's identity and actions will be preformed behind.
+* Enclave.js is a npm package that provides functionality to pull user data from the KBFS based on the Enclave protocol.
 
-`full_name`: The full name of the user
+## How we built it
+* Enclave is a protocol; we a created a markdown document specifying the protocol.
+* We created two demo websites to showcase some of the ways the enclave protocol could be used.
+* We published an NPM package that is used by our demo server to retrieve enclave profiles.
+* We also created a Keybase Bot so users can manage their enclave.yaml files without performing manual filesystem operations.
 
-`email`: The email address of the user
+## Challenges we ran into
+Due to the cutting-edge nature of the KBFS, we had to create our own Golang client for abstracting KBFS operations. In addition, we had a very poor user experience when using KBFS with Windows :(
 
-`profile_image_url`: The url of a profile image associated with the user.
+KBFS works great on Linux though, and we were ultimately impressed by its remote mounting capabilities!
 
-`resume`: A link to a resume of the user
+## Accomplishments that we're proud of
+We're proud of coming up with a hack that we feel is very inline with the theme of Citizen Hacks, and not just something flashy to be demoed. We're also proud of utilizing a wide variety of technologies that our hack builds upon.
 
-`credit_card_number`: Credit card number
+## What we learned
+* We became familiar with KBFS (we built an abstraction layer on top of it!)
+* We learned the value of sleep (Zzzz).
+* One of our team members used Golang for the first time!
+* More is less; focus on the stuff people will understand, use, and appreciate.
 
-`credit_card_expiry`: Expiration date of the credit card. Format is YYYY-MM-DD
+## Built With
+KBFS
+node.js
+express.js
+react
+blueprint.js
+golang
+[go-keybase-chat-bot](https://github.com/keybase/go-keybase-chat-bot)
 
-`credit_card_csv`: Three digit code on back of card
 
-### Example public enclave.yaml file
+## What's next for Enclave
+We would like to extend Enclave by creating a web application for managing enclave files. We would also like to create a website which outlines the spec in an attractive way and provides download links for all of the tooling we've created. 
 
-Located at /keybase/public/\<username>/.enclave/enclave.yaml
-
-```yaml
-username: AliceRox
-full_name: Alice Bobation
-email: alice1234@gmail.com
-profile_image_url: /keybase/public/<username>/.enclave/profilepic.png
-```
-
-### Example private enclave.yaml file
-
-Located at /keybase/private/\<username>#<oraganization_name>/.enclave/enclave.yaml
-
-```yaml
-username: AliceRox
-email: alice1234@gmail.com
-credit_card_number: 4512-1231-1236-7892
-credit_card_expiry: 2021-06-17
-credit_card_csv: 126
-```
-
-## Profiles
-
-An individual may have several online personas. Enclave allows the individual to have multiple enclave profiles. The user can seperate thier information by namespacing their enclave.yaml file under a folder. For example the user may have a gaming profile and a professional profile. They would organize thier enclave.yaml files in the following fasion.
-
-### Example of two profiles
-
-Located at /keybase/public/nick.tesla/**gaming**/.enclave/enclave.yaml
-
-```yaml
-username: Gamerguy123
-email: gamingguy1234@gmail.com
-profile_image_url: https://coolgamerwebsite/gamerguy123/pic.jpg
-```
-
-Located at /keybase/public/nick.tesla/**professional**/.enclave/enclave.yaml
-
-```yaml
-username: NickolaTesla
-email: Nickola@teslaresearch.com
-phone_number: 416-678-9824
-resume: https://resumehoster.com/nick/resume.pdf
-```
-
-## Groups
-
-An individual may want to group various common entities together for easier management of their data. For example, one could group their banks together and be able to modify their mailing address, email, phone number, etc for all banks at once.
-
-Group configs must be stored in this location: `/keybase/private/<user>/.enclave/groups.yaml`
-
-### Example group config
-
-```yaml
-bank:
-  - TD
-  - BMO
-  - RBC
-shopping:
-  - BestBuy
-  - Amazon
-```
+## Links
+https://github.com/ScottyFillups/enclave
+https://www.npmjs.com/package/enclavejs
