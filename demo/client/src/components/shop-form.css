@@ -1,9 +1,17 @@
 .shop-form-container {
   position: fixed;
   width: 300px;
-  height: 340px;
+  height: 440px;
   top: 50%;
   left: 50%;
   margin-left: -150px;
   margin-top: -200px;
+}
+
+.shop-form-success-card {
+  text-align: center;
+}
+
+.shop-form-success-button {
+  margin: 20px;
 }

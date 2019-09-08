@@ -50,7 +50,6 @@ export default class Shop extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      error: false,
       displayForm: false,
       selectedProduct: null
     };
@@ -92,7 +91,7 @@ export default class Shop extends React.Component {
           onClose={() => this.setState({ displayForm: false })}
         >
           <ShopForm
-            error={this.state.error}
+            onSuccess={() => this.setState({ displayForm: false })}
             product={this.state.selectedProduct}
           />
         </Overlay>
