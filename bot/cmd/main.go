@@ -74,6 +74,10 @@ func listen(kbc *kbchat.API, sub kbchat.NewSubscription) {
 		switch command {
 		case "group":
 		case "data":
+			err := handleDataCommand(kbc, fragments[1:])
+			if err != nil {
+				sendSelfMessage(kbc, fmt.Sprintf("Error parsing command: %s\n", err.Error()))
+			}
 		default:
 			_, err := sendSelfMessage(kbc, fmt.Sprintf("Invalid command: %s\n", command))
 			if err != nil {
@@ -83,7 +87,7 @@ func listen(kbc *kbchat.API, sub kbchat.NewSubscription) {
 	}
 }
 
-func handleGroupCommand(fragments []string) {
+func handleGroupCommand(kbc *kbchat.API, fragments []string) {
 	if len(fragments) < 2 {
 		
 	}
@@ -91,15 +95,20 @@ func handleGroupCommand(fragments []string) {
 
 }
 
-func handleDataCommand(fragments []string) (error){
+func handleDataCommand(kbc *kbchat.API, fragments []string) (error){
 	if len(fragments) < 2 {
 		err := errors.New("Arguments < 2");
 		return err
 	}
-
-	switch firstArg:= fragments[1]; firstArg {
+	switch firstArg:= fragments[0]; firstArg {
 	case "print": 
-		fmt.Println("Print")
+		fmt.Println("Handling print argument")
+	case "set":
+		fmt.Println("Handling set argument")
+	case "unset":
+		fmt.Println("Handling unset argument")
+	default:
+		return errors.New("Argument (" + fragments[0] + ") not recognized.")
 	}
 	return nil
 }
