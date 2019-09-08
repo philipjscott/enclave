@@ -124,13 +124,14 @@ func ReadFile(kbc *kbchat.API, filePath string) ([]byte) {
 	return yamlFile
 }
 
-func UnmarshalFile(kbc *kbchat.API, yamlFile []byte) {
-	m := make(map[interface{}]interface{})
+func UnmarshalFile(kbc *kbchat.API, yamlFile []byte) (map[string]interface{}) {
+	m := make(map[string]interface{})
 	err := yaml.Unmarshal(yamlFile, &m)
 	if err != nil {
 		alert("Unmarshal: %v", err)
 		sendSelfMessage(kbc, fmt.Sprintf("Error unmarshalling file: %s\n", err.Error()))
 	}
+	return m
 }
 
 type groupsSchema struct {
