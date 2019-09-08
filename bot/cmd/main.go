@@ -1,12 +1,12 @@
 package main
 
 import (
+	"errors"
 	"flag"
 	"fmt"
+	"io/ioutil"
 	"os"
 	"strings"
-	"errors"
-	"io/ioutil"
 
 	"github.com/keybase/go-keybase-chat-bot/kbchat"
 	"gopkg.in/yaml.v2"
@@ -75,6 +75,7 @@ func listen(kbc *kbchat.API, sub kbchat.NewSubscription) {
 		command = command[1:]
 		switch command {
 		case "group":
+			handleGroupCommand(kbc, fragments)
 		case "data":
 			err := handleDataCommand(kbc, fragments[1:])
 			if err != nil {
@@ -89,21 +90,38 @@ func listen(kbc *kbchat.API, sub kbchat.NewSubscription) {
 	}
 }
 
-func handleGroupCommand(kbc *kbchat.API, fragments []string) {
+func handleGroupCommand(kbc *kbchat.API, fragments []string) error {
 	if len(fragments) < 2 {
-		
-	}
-	// put everything in /Keybase/private/<user>/.enclave/groups.
-
-}
-
-func handleDataCommand(kbc *kbchat.API, fragments []string) (error){
-	if len(fragments) < 2 {
-		err := errors.New("Arguments < 2");
+		err := errors.New("Arguments < 2")
+		sendSelfMessage(kbc, fmt.Sprintf("Options: add, create, remove, print"))
 		return err
 	}
-	switch firstArg:= fragments[0]; firstArg {
-	case "print": 
+	// put everything in /Keybase/private/<user>/.enclave/groups.yaml
+	switch fragments[1] {
+	case "add":
+		sendSelfMessage(kbc, fmt.Sprintf("Add"))
+	case "create":
+		sendSelfMessage(kbc, fmt.Sprintf("Create"))
+	case "remove":
+		sendSelfMessage(kbc, fmt.Sprintf("Remove"))
+	case "print":
+		sendSelfMessage(kbc, fmt.Sprintf("Print"))
+	default:
+		_, err := sendSelfMessage(kbc, fmt.Sprintf("Invalid command: %s\n", fragments[0]))
+		if err != nil {
+			alert("Error receiving chat message; %s", err.Error())
+		}
+	}
+	return nil
+}
+
+func handleDataCommand(kbc *kbchat.API, fragments []string) error {
+	if len(fragments) < 2 {
+		err := errors.New("Arguments < 2")
+		return err
+	}
+	switch firstArg := fragments[0]; firstArg {
+	case "print":
 		fmt.Println("Handling print argument")
 	case "set":
 		fmt.Println("Handling set argument")
@@ -115,16 +133,16 @@ func handleDataCommand(kbc *kbchat.API, fragments []string) (error){
 	return nil
 }
 
-func ReadFile(kbc *kbchat.API, filePath string) ([]byte) {
+func ReadFile(kbc *kbchat.API, filePath string) []byte {
 	yamlFile, err := ioutil.ReadFile("conf.yaml")
-	if (err != nil) {
+	if err != nil {
 		alert("Error reading file; $s", err.Error())
 		sendSelfMessage(kbc, fmt.Sprintf("Error reading file: %s\n", err.Error()))
 	}
 	return yamlFile
 }
 
-func UnmarshalFile(kbc *kbchat.API, yamlFile []byte) (map[string]interface{}) {
+func UnmarshalFile(kbc *kbchat.API, yamlFile []byte) map[string]interface{} {
 	m := make(map[string]interface{})
 	err := yaml.Unmarshal(yamlFile, &m)
 	if err != nil {
