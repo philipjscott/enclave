@@ -29,7 +29,7 @@ func alert(msg string, args ...interface{}) {
 func sendSelfMessage(kbc *kbchat.API, msg string) (kbchat.SendResponse, error) {
 	username := kbc.GetUsername()
 	tlfName := fmt.Sprintf("%s,%s", username, username)
-	return kbc.SendMessageByTlfName(tlfName, msg)
+	return kbc.SendMessageByTlfName(tlfName, "[EnclaveBot]: "+msg)
 }
 
 func main() {
@@ -128,7 +128,7 @@ func handleGroupCommand(kbc *kbchat.API, fragments []string) error {
 			sendSelfMessage(kbc, fmt.Sprintf("Group '%s' doesn't exist!", targetGroup))
 		} else {
 			newEntity := fragments[2]
-			var groupDataSlice []string = groupsData[targetGroup].([]string)
+			groupDataSlice := groupsData[targetGroup].([]interface{})
 			groupsData[targetGroup] = append(groupDataSlice, newEntity)
 			data, _ := MarshalFile(groupsData)
 			error := WriteFile(GROUPS_FILE_NAME, data)
