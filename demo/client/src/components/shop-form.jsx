@@ -8,7 +8,7 @@ export function ShopForm(props) {
 
   return (
     <Card className={c(props.className, 'face-form-container')}>
-      <h1>Buy {props.productName}</h1>
+      <h1>Buy {props.product.name}</h1>
       <FormGroup
         label='Profile'
         labelFor='profile-id'
