@@ -101,12 +101,12 @@ func handleGroupCommand(kbc *kbchat.API, fragments []string) error {
 	}
 
 	// Check for groups file, create one if it doesn't exist.
-	GROUPS_NAME := "/keybase/private/" + kbc.GetUsername() + "/.enclave/groups.yaml"
+	GROUPS_FILE_NAME := "/keybase/private/" + kbc.GetUsername() + "/.enclave/groups.yaml"
 	var groupsFile []byte
-	groupsFile, err := ReadFile(GROUPS_NAME)
+	groupsFile, err := ReadFile(GROUPS_FILE_NAME)
 	if err != nil {
-		_, _ = CreateFile(GROUPS_NAME)
-		groupsFile, err = ReadFile(GROUPS_NAME)
+		_ = WriteFile(GROUPS_FILE_NAME)
+		groupsFile, err = ReadFile(GROUPS_FILE_NAME)
 	}
 	groupsData, err := UnmarshalFile(groupsFile)
 	if err != nil {
@@ -139,13 +139,8 @@ func handleDataCommand(kbc *kbchat.API, fragments []string) error {
 	switch firstArg := fragments[0]; firstArg {
 	case "print":
 		fmt.Println("Handling print argument")
-<<<<<<< HEAD
-		file, err := ReadFile("/keybase/private/sokojoe/.enclave/enclave.yaml")
-		if err != nil {
-=======
 		file, err := ReadFile(fmt.Sprintf("/keybase/private/sokojoe#%s/.enclave/enclave.yaml", fragments[1]))
-		if (err != nil) {
->>>>>>> d2d710ed4ccfdd7ceab7e3ccb247e537e95ec84f
+		if err != nil {
 			alert("Error reading file; $s", err.Error())
 			sendSelfMessage(kbc, fmt.Sprintf("File /keybase/private/sokojoe#%s/.enclave/enclave.yaml does not exist", fragments[1]))
 			return nil
@@ -159,22 +154,22 @@ func handleDataCommand(kbc *kbchat.API, fragments []string) error {
 		sendSelfMessage(kbc, fmt.Sprintf("%s", data))
 	case "set":
 		if len(fragments) < 4 {
-			err := errors.New("Arguments < 4");
+			err := errors.New("Arguments < 4")
 			return err
 		}
 		fmt.Println("Handling set argument")
 		file, err := ReadFile(fmt.Sprintf("/keybase/private/sokojoe#%s/.enclave/enclave.yaml", fragments[2]))
-		if (err != nil) {
+		if err != nil {
 			alert("Error reading file; $s", err.Error())
 			return errors.New(fmt.Sprintf("Error: File /keybase/private/sokojoe#%s/.enclave/enclave.yaml does not exist", fragments[2]))
 		}
 		data, err := UnmarshalFile(file)
-		if (err != nil) {
+		if err != nil {
 			alert("Unmarshal: %v", err)
 			return errors.New(fmt.Sprintf("Error: File /keybase/private/sokojoe#%s/.enclave/enclave.yaml is not a valid yaml file", fragments[2]))
 		}
 		data[fragments[3]] = fragments[4]
-		
+
 	case "unset":
 		fmt.Println("Handling unset argument")
 	default:
@@ -205,7 +200,7 @@ func CreateFile(filePath string) (*os.File, error) {
 	return yamlFile, nil
 }
 
-func WriteFile(filePath string, data []byte) (error) {
+func WriteFile(filePath string, data []byte) error {
 	err := ioutil.WriteFile(filePath, data, 0644)
 	return err
 }
