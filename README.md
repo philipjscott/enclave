@@ -16,13 +16,11 @@ If an individual would like to share information with a specific organization or
 
 `resume`: A link to a resume of the user
 
-`credit_card`: An object containing credit card information. _Highly recommended to put this in a Private Enclave_
+`credit_card_number`: Credit card number
 
-`credit_card.card_number`: Credit card number
+`credit_card_expiry`: Expiration date of the credit card. Format is YYYY-MM-DD
 
-`credit_card.card_expiry`: Expiration date of the credit card. Format is YYYY-MM-DD
-
-`credit_card.card_csv`: Three digit code on back of card
+`credit_card_csv`: Three digit code on back of card
 
 ### Example public enclave.yaml file
 
@@ -42,10 +40,9 @@ Located at /keybase/private/\<username>#<oraganization_name>/.enclave/enclave.ya
 ```yaml
 username: AliceRox
 email: alice1234@gmail.com
-credit_card:
-  card_number: 4512-1231-1236-7892
-  card_expiry: 2021-06-17
-  card_csv: 126
+credit_card_number: 4512-1231-1236-7892
+credit_card_expiry: 2021-06-17
+credit_card_csv: 126
 ```
 
 ## Profiles
