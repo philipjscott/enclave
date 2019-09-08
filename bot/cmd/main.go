@@ -116,7 +116,6 @@ func handleGroupCommand(kbc *kbchat.API, fragments []string) error {
 		sendSelfMessage(kbc, fmt.Sprintf("Error unmarshalling file: %s\n", err.Error()))
 		return nil
 	}
-	fmt.Println(StringifyJSON(groupsData))
 
 	// Handle group commands
 	targetGroup := fragments[1]
@@ -125,23 +124,32 @@ func handleGroupCommand(kbc *kbchat.API, fragments []string) error {
 		sendSelfMessage(kbc, fmt.Sprintf("Add"))
 
 	case "create":
-		sendSelfMessage(kbc, fmt.Sprintf("Create"))
 		if checkGroup(groupsData, targetGroup) {
-			sendSelfMessage(kbc, fmt.Sprintf("Group %s exists!", targetGroup))
+			sendSelfMessage(kbc, fmt.Sprintf("Group '%s' created!", targetGroup))
 		} else {
 			groupsData[targetGroup] = []string{}
 			data, _ := MarshalFile(groupsData)
 			error := WriteFile(GROUPS_FILE_NAME, data)
 			if error != nil {
-				sendSelfMessage(kbc, fmt.Sprintf("Error while creating group %s", targetGroup))
+				sendSelfMessage(kbc, fmt.Sprintf("Error while creating group '%s'", targetGroup))
 				return nil
 			}
-			sendSelfMessage(kbc, fmt.Sprintf("Group %s created!", targetGroup))
+			sendSelfMessage(kbc, fmt.Sprintf("Group '%s' created!", targetGroup))
 		}
 	case "remove":
-		sendSelfMessage(kbc, fmt.Sprintf("Remove"))
+		if checkGroup(groupsData, targetGroup) == false {
+			sendSelfMessage(kbc, fmt.Sprintf("Group '%s' doesn't exist!", targetGroup))
+		} else {
+			delete(groupsData, targetGroup)
+			data, _ := MarshalFile(groupsData)
+			error := WriteFile(GROUPS_FILE_NAME, data)
+			if error != nil {
+				sendSelfMessage(kbc, fmt.Sprintf("Error while deleting group '%s'", targetGroup))
+				return nil
+			}
+			sendSelfMessage(kbc, fmt.Sprintf("Group '%s' deleted!", targetGroup))
+		}
 	case "print":
-		// sendSelfMessage(kbc, fmt.Sprintf(StringifyJSON(groupsData)))
 		sendSelfMessage(kbc, fmt.Sprintf("```%s```", groupsFile))
 	default:
 		return errors.New("Argument (" + fragments[0] + ") not recognized.")
@@ -149,7 +157,7 @@ func handleGroupCommand(kbc *kbchat.API, fragments []string) error {
 	return nil
 }
 func checkGroup(groupsData map[string]interface{}, group string) bool {
-	if _, ok := groupsData["foo"]; ok {
+	if _, ok := groupsData[group]; ok {
 		return true
 	}
 	return false
